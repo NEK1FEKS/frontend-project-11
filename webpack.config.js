@@ -1,14 +1,12 @@
-// Generated using webpack-cli https://github.com/webpack/webpack-cli
-
-const path = require('path');
-const HtmlWebpackPlugin = require('html-webpack-plugin');
+import path from 'path';
+import HtmlWebpackPlugin from 'html-webpack-plugin';
 
 const isProduction = process.env.NODE_ENV === 'production';
 
 const config = {
   entry: './src/index.js',
   output: {
-    path: path.resolve(__dirname, 'dist'),
+    path: path.resolve('dist'),
   },
   devServer: {
     open: true,
@@ -19,8 +17,6 @@ const config = {
       template: 'index.html',
     }),
 
-    // Add your plugins here
-    // Learn more about plugins from https://webpack.js.org/configuration/plugins/
   ],
   module: {
     rules: [
@@ -33,14 +29,11 @@ const config = {
         test: /\.scss$/,
         use: ['style-loader', 'css-loader', 'sass-loader', 'postcss-loader'],
       },
-
-      // Add your rules for custom modules here
-      // Learn more about loaders from https://webpack.js.org/loaders/
     ],
   },
 };
 
-module.exports = () => {
+export default () => {
   if (isProduction) {
     config.mode = 'production';
   } else {
