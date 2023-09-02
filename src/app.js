@@ -1,3 +1,4 @@
+/* eslint-disable import/no-extraneous-dependencies */
 import * as yup from 'yup';
 import onChange from 'on-change';
 
@@ -23,6 +24,7 @@ const renderSuccess = (fields) => {
 };
 
 // View
+// eslint-disable-next-line no-unused-vars
 const render = (elements, initialState) => (path, value, prevValue) => {
   switch (path) {
     case 'form.validLinks':
