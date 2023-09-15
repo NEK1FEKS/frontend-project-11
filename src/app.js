@@ -1,4 +1,3 @@
-/* eslint-disable import/no-extraneous-dependencies */
 import * as yup from 'yup';
 import onChange from 'on-change';
 
@@ -23,14 +22,13 @@ const renderSuccess = (fields) => {
   fields.rssInputFeedback.textContent = 'RSS load success';
 };
 
-// View
-// eslint-disable-next-line no-unused-vars
+// view
 const render = (elements, initialState) => (path, value, prevValue) => {
+  console.log(initialState, prevValue);
   switch (path) {
     case 'form.validLinks':
       renderSuccess(elements.fields);
       break;
-
     case 'form.error':
       renderError(elements.fields, value);
       break;
