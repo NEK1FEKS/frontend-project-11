@@ -7,7 +7,7 @@ export default (xmlSting) => {
   }
 
   const rssData = doc.documentElement;
-  const channel = rssData.childNodes[1];
+  const channel = rssData.children[0];
   const channelData = Array.from(channel.childNodes)
     .filter((el) => el.nodeType !== 3)
     .reduce((acc, node) => {
