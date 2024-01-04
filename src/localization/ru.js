@@ -4,5 +4,7 @@ export default {
     notOneOf: 'RSS уже существует',
     parseError: 'Ресурс не содержит валидный RSS',
     url: 'Ссылка должна быть валидным URL',
+    AxiosError: 'Ошибка сети',
+    loading: 'Загрузка',
   },
 };
