@@ -34,7 +34,7 @@ export default () => {
     form: {
       valid: true,
       processState: 'filling',
-      error: '',
+      error: null,
     },
     validLinks: [],
     data: {
@@ -42,10 +42,11 @@ export default () => {
       postItemsList: [],
     },
     uiState: {
+      readLink: '',
+      readPost: null,
       postsReadId: [],
     },
   };
-
   const elements = {
     form: document.querySelector('.rss-form'),
     fields: {
@@ -55,11 +56,46 @@ export default () => {
     submitButton: document.querySelector('button[type="submit"]'),
     posts: document.querySelector('.posts'),
     feeds: document.querySelector('.feeds'),
+    modal: {
+      window: document.getElementById('modal'),
+      linkButton: document.getElementById('modal').querySelector('.btn'),
+      title: document.querySelector('.modal-title'),
+      description: document.querySelector('.modal-body'),
+    },
   };
 
-  const updateData = () => {
-    console.log('update');
-    setTimeout(() => updateData(), 5000);
+  const updateData = (links) => {
+    const uploadedPosts = links.map((link) => axios.get(routes(link))
+      .then((response) => {
+        const channelData = parser(response.data.contents);
+        if (!channelData) {
+          throw new Error('parseError');
+        }
+        return channelData.items;
+      })
+      .catch(() => ([])));
+
+    const promise = Promise.all(uploadedPosts);
+    promise.then((arrOfPosts) => {
+      const posts = arrOfPosts.flatMap((posts) => posts);
+      return posts;
+    })
+      .then((posts) => {
+        const oldPostsTitles = state.data.postItemsList.map(({ title }) => title);
+        const newPosts = posts.filter((post) => !oldPostsTitles.includes(post.title));
+        if (newPosts.length !== 0) {
+          state.data.postItemsList.unshift(...newPosts);
+          state.data.postItemsList.forEach((item, id) => item.id = state.data.postItemsList.length
+            - (id + 1));
+          watchedState.form.processState = 'update';
+        }
+      })
+      .then(() => {
+        setTimeout(() => {
+          state.form.processState = 'filling';
+          return updateData(links);
+        }, 5000);
+      });
   };
 
   const watchedState = onChange(state, render(elements, state, i18Instance));
@@ -68,7 +104,6 @@ export default () => {
     e.preventDefault();
     const formData = new FormData(e.target);
     const inputData = formData.get('url');
-
     rssValidateSchema(state.validLinks).validate(inputData)
       .then((link) => {
         state.validLinks.push(link);
@@ -83,27 +118,47 @@ export default () => {
       })
       .then((response) => {
         if (response.status !== 200) {
-          throw new Error(`${response.status}`);
+          throw new Error(`networkError: ${response.status}`);
         }
         const channelData = parser(response.data.contents);
         if (!channelData) {
           throw new Error('parseError');
         }
-        console.log(channelData);
         const { title, description, items } = channelData;
         state.data.feedItemsList.unshift({ title, description });
         state.data.postItemsList.unshift(...items);
+        state.data.postItemsList.forEach((item, id) => item.id = state.data.postItemsList.length 
+          - (id + 1));
         watchedState.form.processState = 'sent';
       })
-      .then(() => {
-        updateData();
-      })
       .catch((err) => {
-        console.log(err);
-        state.form.error = err.errors.map((err) => i18Instance.t(err.key)).join('');
-        console.log(state.form.error);
+        console.log(err.errors);
+        switch (err.name) {
+          case 'ValidationError':
+            state.form.error = i18Instance.t(err.errors[0].key);
+            break;
+          case 'Error':
+            state.form.error = 'Ресурс не содержит валидный RSS';
+            break;
+          default: state.form.error = 'Ошибка сети';
+        }
         state.form.valid = false;
         watchedState.form.processState = 'error';
       });
   });
+  updateData(state.validLinks);
+
+  elements.modal.window.addEventListener('shown.bs.modal', (e) => {
+    const modalButton = e.relatedTarget;
+    const readPostId = modalButton.getAttribute('data-id');
+    const readPost = state.data.postItemsList.filter((post) => String(post.id) === readPostId);
+    const readLink = modalButton.previousSibling;
+    if (!state.uiState.postsReadId.includes(readPostId)) {
+      state.uiState.readLink = readLink.getAttribute('href');
+      state.uiState.readPost = readPost[0];
+      state.uiState.postsReadId.push(readPostId);
+      watchedState.uiState.modalWindow = 'windowOpen';
+    }
+  });
+  elements.modal.window.addEventListener('hidden.bs.modal', () => state.uiState.modalWindow = 'windowClose');
 };
