@@ -14,12 +14,10 @@ const itemFeedGenerator = (feeds) => {
   });
   return feedsCollection;
 };
-
 const itemPostGenerator = (items) => {
   const postItems = items.map(({ title, link, id }) => {
     const postItem = document.createElement('li');
     postItem.classList.add('list-group-item', 'd-flex', 'justify-content-between', 'align-items-start', 'border-0', 'border-end-0');
-
     const postLink = document.createElement('a');
     postLink.classList.add('fw-bold');
     postLink.setAttribute('href', `${link}`);
@@ -36,7 +34,6 @@ const itemPostGenerator = (items) => {
     button.textContent = 'Просмотр';
     postItem.appendChild(postLink);
     postItem.appendChild(button);
-
     return postItem;
   });
   return postItems;
@@ -56,15 +53,16 @@ const containerGenerator = (title) => {
   cardBorder.appendChild(listGroup);
   return cardBorder;
 };
-const renderError = (fields, error) => {
-  fields.rssInput.classList.add('is-invalid');
-  if (!fields.rssInputFeedback.classList.contains('text-danger')) {
-    fields.rssInputFeedback.classList.remove('text-success');
-    fields.rssInputFeedback.classList.add('text-danger');
+const renderError = (error) => {
+  const rssInput = document.getElementById('url-input');
+  const rssInputFeedback = document.querySelector('.feedback');
+  rssInput.classList.add('is-invalid');
+  if (!rssInputFeedback.classList.contains('text-danger')) {
+    rssInputFeedback.classList.remove('text-success');
+    rssInputFeedback.classList.add('text-danger');
   }
-  fields.rssInputFeedback.textContent = error;
+  rssInputFeedback.textContent = error;
 };
-
 const renderReadPosts = (elements, state) => {
   const links = elements.posts.querySelectorAll('a');
   const readLinks = Array.from(links)
@@ -74,19 +72,20 @@ const renderReadPosts = (elements, state) => {
     readLink.classList.add('fw-normal');
   });
 };
-
-const renderSuccess = (elements, i18Instance) => {
-  const hadError = elements.fields.rssInput.classList.contains('is-invalid');
+const renderSuccess = (i18Instance) => {
+  const rssInput = document.getElementById('url-input');
+  const rssInputFeedback = document.querySelector('.feedback');
+  const hadError = rssInput.classList.contains('is-invalid');
   if (hadError) {
-    elements.fields.rssInput.classList.remove('is-invalid');
+    rssInput.classList.remove('is-invalid');
   }
-  if (!elements.fields.rssInputFeedback.classList.contains('text-success')) {
-    elements.fields.rssInputFeedback.classList.remove('text-danger');
-    elements.fields.rssInputFeedback.classList.add('text-success');
+  if (!rssInputFeedback.classList.contains('text-success')) {
+    rssInputFeedback.classList.remove('text-danger');
+    rssInputFeedback.classList.add('text-success');
   }
-  elements.fields.rssInputFeedback.textContent = i18Instance.t('success');
-  elements.fields.rssInput.value = '';
-  elements.fields.rssInput.focus();
+  rssInputFeedback.textContent = i18Instance.t('success');
+  rssInput.value = '';
+  rssInput.focus();
 };
 
 const renderSending = (i18Instance) => {
@@ -100,7 +99,6 @@ const renderFeeds = (elements, state) => {
   feedsContainer.querySelector('.list-group').replaceChildren(...feeds);
   elements.feeds.replaceChildren(feedsContainer);
 };
-
 const renderPosts = (elements, state) => {
   const postsContainer = containerGenerator('Посты');
   const posts = itemPostGenerator(state.data.postItemsList);
@@ -114,25 +112,25 @@ const renderPosts = (elements, state) => {
     readLink.classList.add('fw-normal');
   });
 };
-
 const renderModalWindowContent = (elements, state) => {
-  console.log(elements.modal.linkButton);
+  const modalTitleContainer = elements.modal.querySelector('.modal-title');
+  const modalDescriptionContainer = document.querySelector('.modal-body');
+  const modalLinkButton = document.getElementById('modal').querySelector('.btn');
   const { readPost } = state.uiState;
   const { title, description } = readPost;
-  elements.modal.title.textContent = title;
-  elements.modal.description.textContent = description;
-  elements.modal.linkButton.setAttribute('href', state.uiState.readLink);
+  modalTitleContainer.textContent = title;
+  modalDescriptionContainer.textContent = description;
+  modalLinkButton.setAttribute('href', state.uiState.readLink);
   renderReadPosts(elements, state);
 };
 
 export default (elements, state, i18Instance) => (path, value) => {
-  console.log(value);
   switch (value) {
     case 'sending':
       renderSending(i18Instance);
       break;
     case 'sent':
-      renderSuccess(elements, i18Instance);
+      renderSuccess(i18Instance);
       renderFeeds(elements, state);
       renderPosts(elements, state);
       break;
@@ -143,9 +141,9 @@ export default (elements, state, i18Instance) => (path, value) => {
       renderModalWindowContent(elements, state, value);
       break;
     case 'error':
-      renderError(elements.fields, state.form.error);
+      renderError(state.form.error);
       break;
     default:
-      throw Error('error');
+      throw new Error('Error');
   }
 };
