@@ -6,5 +6,13 @@
 
 ## RSS Aggregator is a web application for automatically collecting messages from sources that export to RSS formats, for example, news headlines, blogs, podcasts and video hosting.
 
+### Install
+
+```
+$ git clone https://github.com/NEK1FEKS/frontend-project-11.git
+$ cd frontend-project-11
+$ make install
+```
+
 ### Link:
 https://frontend-project-11-roan-eight.vercel.app/
