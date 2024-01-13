@@ -3,4 +3,3 @@ import 'bootstrap';
 import app from './app.js';
 
 app();
-// console.log('Hello World!!!');
