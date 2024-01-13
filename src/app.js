@@ -5,8 +5,7 @@ import axios from 'axios';
 import resources from './localization/index.js';
 import parser from './parser.js';
 import render from './render.js';
-
-const routes = (url) => `https://allorigins.hexlet.app/get?disableCache=true&url=${encodeURIComponent(url)}`;
+import routes from './routes.js';
 
 const rssValidateSchema = (listsCollection) => {
   yup.setLocale({
