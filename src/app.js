@@ -127,7 +127,7 @@ export default () => {
         const itemsWithId = addId(items, length);
         state.data.feedItemsList.unshift({ title, description });
         state.data.postItemsList.unshift(...itemsWithId);
-        watchedState.form.processState = 'sent';
+        watchedState.form.processState = 'success';
       })
       .catch((err) => {
         const parseError = {};

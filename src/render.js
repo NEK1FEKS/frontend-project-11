@@ -129,7 +129,7 @@ export default (elements, state, i18Instance) => (path, value) => {
     case 'sending':
       renderSending(i18Instance);
       break;
-    case 'sent':
+    case 'success':
       renderSuccess(i18Instance);
       renderFeeds(elements, state);
       renderPosts(elements, state);
