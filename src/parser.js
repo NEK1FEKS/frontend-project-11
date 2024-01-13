@@ -3,7 +3,7 @@ export default (xmlString) => {
   const doc = parser.parseFromString(xmlString, 'application/xml');
   const errorNode = doc.querySelector('parsererror');
   if (errorNode) {
-    return false;
+    throw new Error('parseError');
   }
   const rssData = doc.documentElement;
   const channel = rssData.children[0];
