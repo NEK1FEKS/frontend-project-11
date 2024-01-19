@@ -1,3 +1,5 @@
+import textExtractor from './textExtractor.js';
+
 const itemFeedGenerator = (feeds) => {
   const feedsCollection = feeds.map(({ title, description }) => {
     const feedItem = document.createElement('li');
@@ -14,6 +16,7 @@ const itemFeedGenerator = (feeds) => {
   });
   return feedsCollection;
 };
+
 const itemPostGenerator = (items) => {
   const postItems = items.map(({ title, link, id }) => {
     const postItem = document.createElement('li');
@@ -38,6 +41,7 @@ const itemPostGenerator = (items) => {
   });
   return postItems;
 };
+
 const containerGenerator = (title) => {
   const cardBorder = document.createElement('div');
   cardBorder.classList.add('card', 'border-0');
@@ -53,6 +57,7 @@ const containerGenerator = (title) => {
   cardBorder.appendChild(listGroup);
   return cardBorder;
 };
+
 const renderError = (error) => {
   const rssInput = document.getElementById('url-input');
   const rssInputFeedback = document.querySelector('.feedback');
@@ -63,6 +68,7 @@ const renderError = (error) => {
   }
   rssInputFeedback.textContent = error;
 };
+
 const renderReadPosts = (elements, state) => {
   const links = elements.posts.querySelectorAll('a');
   const readLinks = Array.from(links)
@@ -72,6 +78,7 @@ const renderReadPosts = (elements, state) => {
     readLink.classList.add('fw-normal');
   });
 };
+
 const renderSuccess = (i18Instance) => {
   const rssInput = document.getElementById('url-input');
   const rssInputFeedback = document.querySelector('.feedback');
@@ -99,6 +106,7 @@ const renderFeeds = (elements, state) => {
   feedsContainer.querySelector('.list-group').replaceChildren(...feeds);
   elements.feeds.replaceChildren(feedsContainer);
 };
+
 const renderPosts = (elements, state) => {
   const postsContainer = containerGenerator('Посты');
   const posts = itemPostGenerator(state.data.postItemsList);
@@ -112,6 +120,7 @@ const renderPosts = (elements, state) => {
     readLink.classList.add('fw-normal');
   });
 };
+
 const renderModalWindowContent = (elements, state) => {
   const modalTitleContainer = elements.modal.querySelector('.modal-title');
   const modalDescriptionContainer = document.querySelector('.modal-body');
@@ -119,7 +128,7 @@ const renderModalWindowContent = (elements, state) => {
   const { readPost } = state.uiState;
   const { title, description } = readPost;
   modalTitleContainer.textContent = title;
-  modalDescriptionContainer.textContent = description;
+  modalDescriptionContainer.textContent = textExtractor(description);
   modalLinkButton.setAttribute('href', state.uiState.readLink);
   renderReadPosts(elements, state);
 };
