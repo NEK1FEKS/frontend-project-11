@@ -145,7 +145,6 @@ export default () => {
             state.form.error = i18Instance.t(networkError.key);
             break;
           default:
-            state.form.error = 'Dark Magic';
             throw new Error('data processing error');
         }
         state.form.valid = false;
